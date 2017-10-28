@@ -153,7 +153,7 @@ static struct drm_driver st7735r_driver = {
 	.minor			= 0,
 };
 
-static const struct of_device_id mi0283qt_of_match[] = {
+static const struct of_device_id st7735r_of_match[] = {
 	{ .compatible = "multi-inno,st7735r" },
 	{},
 };
@@ -200,16 +200,8 @@ static int st7735r_probe(struct spi_device *spi)
 
 	device_property_read_u32(dev, "rotation", &rotation);
 
-	ret = mipi_dbi_spi_init(spi, mipi, dc);
-	if (ret)
-		return ret;
-
-	ret = mipi_dbi_init(&spi->dev, mipi, &mi0283qt_pipe_funcs,
-			    &mi0283qt_driver, &mi0283qt_mode, rotation);
-	if (ret)
-		return ret;
-
-	ret = st7735r_init(mipi);
+	ret = mipi_dbi_spi_init(spi, mipi, dc, &st7735r_pipe_funcs,
+			    &st7735r_driver, &st7735r_mode, rotation);
 	if (ret)
 		return ret;
 
