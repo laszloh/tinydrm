@@ -154,7 +154,7 @@ static struct drm_driver st7735r_driver = {
 };
 
 static const struct of_device_id st7735r_of_match[] = {
-	{ .compatible = "multi-inno,st7735r" },
+	{ .compatible = "sitronix,st7735r" },
 	{},
 };
 MODULE_DEVICE_TABLE(of, st7735r_of_match);
