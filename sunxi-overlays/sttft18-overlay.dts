@@ -1,0 +1,62 @@
+/*
+ * Device Tree overlay for the Sitronix 1.8" TFT
+ *
+ */
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "allwinner,sun8i-h3";
+
+	fragment@0 {
+		target = <&pio>;
+		__overlay__ {
+			tft_pins: tft_pins {
+				pins = "PA07", "PG6", "PG7";	/*BL, DC, RST */
+				function = "gpio_out; 		
+				drive-strength = <10>;			/* weak output */
+				bias-disable;				
+			};
+		};
+	};
+
+	fragment@1 {
+		target = <&spi1>;
+		__overlay__ {
+			/* needed to avoid dtc warning */
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			sttft: sttft@0{
+				compatible = "sitronix,st7735r";
+				reg = <0>;
+				pinctrl-names = "default";
+				pinctrl-0 = <&tft_pins>;
+
+				spi-max-frequency = <32000000>;
+				rotation = <180>;
+				dc-gpios = <&pio 198 0>;	/* PG6, active high */
+				reset-gpios = <&pio 199 1>;	/* PG7, active low */
+				backlight = <&backlight>;
+			};
+
+		};
+	};
+
+	fragment@3 {
+		target-path = "/soc";
+		__overlay__ {
+			backlight: backlight {
+				compatible = "gpio-backlight";
+				gpios = <&pio 7 0>;		/* PA7, active high */
+				default-on;
+			};
+		};
+	};
+
+	__overrides__ {
+		speed =    <&pitft>,"spi-max-frequency:0";
+		rotation = <&pitft>,"rotation:0";
+	};
+};
