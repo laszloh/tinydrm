@@ -10,34 +10,45 @@
 	compatible = "allwinner,sun8i-h3";
 
 	fragment@0 {
-		target = <&pio>;
+		target-path = "/aliases";
 		__overlay__ {
-			tft_pins: tft_pins {
-				pins = "PA07", "PG6", "PG7";	/*BL, DC, RST */
-				function = "gpio_out; 		
-				drive-strength = <10>;			/* weak output */
-				bias-disable;				
-			};
+			spi1 = "/soc/spi@01c69000";
+			pio = "/soc/pinctrl@01c20800";
 		};
 	};
 
 	fragment@1 {
+		target = <&pio>;
+		__overlay__ {
+			tft_pins: tft_pins {
+				pins = "PA7", "PA0", "PA1";	/*BL, DC, RST */
+				function = "gpio_out"; 		
+				drive-strength = <40>;			/* weak output */
+//				bias-disable;				
+			};
+		};
+	};
+
+	fragment@2 {
 		target = <&spi1>;
 		__overlay__ {
 			/* needed to avoid dtc warning */
 			#address-cells = <1>;
 			#size-cells = <0>;
+			status = "okay";
 
 			sttft: sttft@0{
 				compatible = "sitronix,st7735r";
+				status = "okay";
 				reg = <0>;
+				spi-cpol;
 				pinctrl-names = "default";
 				pinctrl-0 = <&tft_pins>;
 
-				spi-max-frequency = <32000000>;
+				spi-max-frequency = <3200000>;
 				rotation = <180>;
-				dc-gpios = <&pio 198 0>;	/* PG6, active high */
-				reset-gpios = <&pio 199 1>;	/* PG7, active low */
+				dc-gpios = <&pio 0 0  0>;	/* PG6, active high */
+				reset-gpios = <&pio 0 1 0>;	/* PG7, active high */
 				backlight = <&backlight>;
 			};
 
@@ -49,14 +60,15 @@
 		__overlay__ {
 			backlight: backlight {
 				compatible = "gpio-backlight";
-				gpios = <&pio 7 0>;		/* PA7, active high */
+				status = "okay";
+				gpios = <&pio 0 7 0>;		/* PA7, active high */
 				default-on;
 			};
 		};
 	};
 
 	__overrides__ {
-		speed =    <&pitft>,"spi-max-frequency:0";
-		rotation = <&pitft>,"rotation:0";
+		speed =    <&sttft>,"spi-max-frequency:0";
+		rotation = <&sttft>,"rotation:0";
 	};
 };
