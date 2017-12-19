@@ -41,14 +41,13 @@
 				compatible = "sitronix,st7735r";
 				status = "okay";
 				reg = <0>;
-				spi-cpol;
 				pinctrl-names = "default";
 				pinctrl-0 = <&tft_pins>;
 
-				spi-max-frequency = <3200000>;
-				rotation = <180>;
-				dc-gpios = <&pio 0 0  0>;	/* PG6, active high */
-				reset-gpios = <&pio 0 1 0>;	/* PG7, active high */
+				spi-max-frequency = <32000000>;
+//				rotation = <180>;
+				dc-gpios = <&pio 0 0  0>;	/* PA0, out, low */
+				reset-gpios = <&pio 0 1 0>;	/* PA1, out, high */
 				backlight = <&backlight>;
 			};
 
